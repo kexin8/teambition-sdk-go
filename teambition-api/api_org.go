@@ -50,8 +50,10 @@ type Scenariofield struct {
 
 //获取企业信息
 // GET https://open.teambition.com/api/org/info
+// 接口地址： https://open.teambition.com/docs/apis/6321c6ce912d20d3b5a488f4
+// @param orgId 企业ID
 func GetOrgInfo(orgId string) (orgDomain Org, err error) {
-	orgDomain, err = Get[Org](fmt.Sprintf("/org/info?orgId=%s", orgId), nil)
+	orgDomain, _, err = Get[Org](fmt.Sprintf("/org/info?orgId=%s", orgId), nil)
 	return
 }
 
@@ -62,9 +64,9 @@ func GetOrgInfo(orgId string) (orgDomain Org, err error) {
 // @param categoryIds 自定义字段分类ID集合，逗号组合
 // @param pageToken 分页标识
 // @param pageSize 分页大小(默认50)
-func V3CustomFieldCategorySearch(q, categoryIds, pageToken string, pageSize int) (data CustomFieldCategory, err error) {
-	data, err = Get[CustomFieldCategory](fmt.Sprintf("/v3/customfield-category/search?q=%s&categoryIds=%s&pageToken=%s&pageSize=%d", q, categoryIds, pageToken, pageSize), nil)
-	return
+func V3CustomFieldCategorySearch(q, categoryIds, pageToken string, pageSize int) (data CustomFieldCategory, nextPageToken string, err error) {
+	data, resp, err := Get[CustomFieldCategory](fmt.Sprintf("/v3/customfield-category/search?q=%s&categoryIds=%s&pageToken=%s&pageSize=%d", q, categoryIds, pageToken, pageSize), nil)
+	return data, resp.NextPageToken, err
 }
 
 // 根据自定义字段分类统计自定义字段数
@@ -72,7 +74,7 @@ func V3CustomFieldCategorySearch(q, categoryIds, pageToken string, pageSize int)
 // 接口地址： https://open.teambition.com/docs/apis/63ee3ea2912d20d3b543ee9c
 // @param categoryIds 自定义字段分类ID集合，逗号组合，未分类可使用 uncategory
 func V3CustomFieldCountByCategory(categoryIds string) (data Category, err error) {
-	data, err = Get[Category](fmt.Sprintf("/v3/customfield/count-by-category?categoryIds=%s", categoryIds), nil)
+	data, _, err = Get[Category](fmt.Sprintf("/v3/customfield/count-by-category?categoryIds=%s", categoryIds), nil)
 	return
 }
 
@@ -83,7 +85,8 @@ func V3CustomFieldCountByCategory(categoryIds string) (data Category, err error)
 // @param sfcIds 任务类型ID集合，逗号组合
 // @param pageToken 分页标识
 // @param pageSize 分页大小(默认50)
-func V3ScenarioFieldConfigSearch(q, sfcIds, pageToken string, pageSize int) (data Scenariofieldconfig, err error) {
-	data, err = Get[Scenariofieldconfig](fmt.Sprintf("/v3/scenariofieldconfig/search?q=%s&sfcIds=%s&pageToken=%s&pageSize=%d", q, sfcIds, pageToken, pageSize), nil)
-	return
+func V3ScenarioFieldConfigSearch(q, sfcIds string, pageToken string, pageSize int) (data Scenariofieldconfig, nextPageToken string, err error) {
+	data, resp, err := Get[Scenariofieldconfig](fmt.Sprintf("/v3/scenariofieldconfig/search?q=%s&sfcIds=%s&pageToken=%s&pageSize=%d", q, sfcIds, pageToken, pageSize), nil)
+
+	return data, resp.NextPageToken, err
 }

@@ -6,7 +6,7 @@ type Response[T any] struct {
 	RequestId    string `json:"requestId"`    // 请求 ID，用于排查问题
 
 	NextPageToken string `json:"nextPageToken,omitempty"`
-	TotalSize     int    `json:"totalSize,omitempty"`
+	TotalSize     int64    `json:"totalSize,omitempty"`
 
 	Result T `json:"result"`
 }
