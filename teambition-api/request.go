@@ -12,7 +12,7 @@ const (
 )
 
 // Request 请求
-func Request[T any](method, url string, body any, headers map[string]string) (result Response[T], err error) {
+func Request[T any](method, url string, body any, headers map[string]string) (result T, err error) {
 
 	if ApiClient.ValidToken() {
 		if err := ApiClient.RefreshToken(); err != nil {
@@ -22,7 +22,7 @@ func Request[T any](method, url string, body any, headers map[string]string) (re
 
 	resp, err := ApiClient.R().
 		SetBody(body).
-		SetResult(result).
+		SetResult(new(Response[T])).
 		SetHeaders(headers).
 		Execute(method, url)
 
@@ -34,37 +34,37 @@ func Request[T any](method, url string, body any, headers map[string]string) (re
 		return result, errors.Errorf("请求失败: %s", resp.String())
 	}
 
-	result = resp.Result().(Response[T])
+	respBody := resp.Result().(*Response[T])
 
-	if result.Code != 200 {
-		return result, errors.Errorf("请求失败: %s", result.ErrorMessage)
+	if respBody.Code != 200 {
+		return result, errors.Errorf("请求失败: %s", respBody.ErrorMessage)
 	}
 
-	return result, nil
+	return respBody.Result, nil
 }
 
 // Get 请求
-func Get[T any](url string, headers map[string]string) (result Response[T], err error) {
+func Get[T any](url string, headers map[string]string) (result T, err error) {
 	return Request[T](GET, url, nil, headers)
 }
 
 // Post 请求
-func Post[T any](url string, body any, headers map[string]string) (result Response[T], err error) {
+func Post[T any](url string, body any, headers map[string]string) (result T, err error) {
 	return Request[T](POST, url, body, headers)
 }
 
 // PostJson 请求
-func PostJson[T any](url string, body any, headers map[string]string) (result Response[T], err error) {
+func PostJson[T any](url string, body any, headers map[string]string) (result T, err error) {
 	headers["Content-Type"] = "application/json"
 	return Request[T](POST, url, body, headers)
 }
 
 // Put 请求
-func Put[T any](url string, body any, headers map[string]string) (result Response[T], err error) {
+func Put[T any](url string, body any, headers map[string]string) (result T, err error) {
 	return Request[T](PUT, url, body, headers)
 }
 
 // Delete 请求
-func Delete[T any](url string, body any, headers map[string]string) (result Response[T], err error) {
+func Delete[T any](url string, body any, headers map[string]string) (result T, err error) {
 	return Request[T](DELETE, url, body, headers)
 }
