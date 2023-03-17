@@ -13,16 +13,24 @@ const (
 
 // Request 请求
 func Request[T any](method, url string, body any, headers map[string]string) (result Response[T], err error) {
+
+	if ApiClient.ValidToken() {
+		if err := ApiClient.RefreshToken(); err != nil {
+			return result, errors.WithStack(err)
+		}
+	}
+
 	resp, err := ApiClient.R().
 		SetBody(body).
 		SetResult(result).
 		SetHeaders(headers).
 		Execute(method, url)
+
 	if err != nil {
 		return result, errors.WithStack(err)
 	}
 
-	if resp.StatusCode() != 200 {
+	if !resp.IsSuccess() {
 		return result, errors.Errorf("请求失败: %s", resp.String())
 	}
 

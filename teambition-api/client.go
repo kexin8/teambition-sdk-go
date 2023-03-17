@@ -68,3 +68,17 @@ func (c *Client) ValidToken() bool {
 
 	return time.Now().Before(c.tokenExpies)
 }
+
+// RefreshToken 刷新token
+func (c *Client) RefreshToken() error {
+	token, exp, err := GetToken(c.options.GetAppId(), c.options.GetAppSecret(), c.options.GetTokenExpies())
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	c.token = token
+	c.tokenExpies = exp
+	c.SetHeader("Authorization", token)
+
+	return nil
+}
