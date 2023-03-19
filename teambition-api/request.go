@@ -35,7 +35,7 @@ func Request[T any](c *Client, method, url string, body any, headers map[string]
 	}
 
 	if resp.Code != 200 {
-		return nil, errors.Errorf("请求失败: %s", resp.ErrorMessage)
+		return nil, errors.Errorf("请求失败: %#v", resp)
 	}
 
 	return resp, nil

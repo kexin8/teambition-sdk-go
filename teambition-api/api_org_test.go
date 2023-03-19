@@ -6,9 +6,12 @@ import (
 
 func TestGetOrgInfo(t *testing.T) {
 
-	orgInfo, err := tbapi.GetOrgInfo(orgId)
+	resp, err := tbapi.GetOrgInfo(orgId)
 	if err != nil {
 		t.Errorf("%v", err)
 	}
-	t.Log(orgInfo)
+	// t.Log(resp)
+	t.Log(resp.Result)
+	t.Log(resp)
+	t.Logf("%#v", resp)
 }
