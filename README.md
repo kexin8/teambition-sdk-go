@@ -53,13 +53,13 @@ func main() {
         appSecret = "..."
 
         tbapi = teambitionapi.NewClient(teambitionapi.NewOptions(orgId, appId, appSecret))
-	)
+    )
     
     resp, err := tbapi.GetOrgInfo(orgId)
-	if err != nil {
-		log.Errorf("%v", err)
-	}
-	log.Info(resp)
+    if err != nil {
+    	log.Errorf("%v", err)
+    }
+    log.Info(resp)
     log.Info(resp.Result)
 }
 ```
