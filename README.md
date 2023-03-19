@@ -42,8 +42,7 @@ package main
 
 import (
     "log"
-    
-	teambitionapi "github.com/kexin8/teambition-sdk-go/teambition-api"
+    teambitionapi "github.com/kexin8/teambition-sdk-go/teambition-api"
 )
 
 func main() {
