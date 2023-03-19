@@ -58,8 +58,8 @@ func main() {
     if err != nil {
     	log.Errorf("%v", err)
     }
-    log.Info(resp)
-    log.Info(resp.Result)
+    log.Println(resp)
+    log.Println(resp.Result)
 }
 ```
 
