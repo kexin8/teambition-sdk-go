@@ -281,7 +281,7 @@ go get github.com/kexin8/teambition-sdk-go
 
 ## Maintainers
 
-[@owner](https://github.com/owner)
+[@kexin8](https://github.com/kexin8)
 
 ## Contributing
 
