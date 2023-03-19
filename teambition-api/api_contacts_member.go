@@ -1,6 +1,10 @@
 package teambitionapi
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/pkg/errors"
+)
 
 type Member struct {
 	UserID         string `json:"userId"`         // 用户 ID
@@ -27,8 +31,11 @@ type Member struct {
 // GET https://open.teambition.com/api/org/admins
 // 接口地址： https://open.teambition.com/docs/apis/6321c6ce912d20d3b5a48974
 // @param orgId 企业ID 必填
-func GetOrgAdmins(orgId string) (members []Member, err error) {
-	members, _, err = Get[[]Member](fmt.Sprintf("/org/admins?orgId=%s", orgId), nil)
+func (c *Client) GetOrgAdmins(orgId string) (resp *Response[[]Member], err error) {
+	resp, err = Get[[]Member](c, fmt.Sprintf("/org/admins?orgId=%s", orgId), nil)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
 	return
 }
 
@@ -36,8 +43,11 @@ func GetOrgAdmins(orgId string) (members []Member, err error) {
 //  GET https://open.teambition.com/api/org/owners
 //  接口地址：https://open.teambition.com/docs/apis/6321c6ce912d20d3b5a489be
 //  @param orgId 企业ID 必填
-func GetOrgOwners(orgId string) (members []Member, err error) {
-	members, _, err = Get[[]Member](fmt.Sprintf("/org/owners?orgId=%s", orgId), nil)
+func (c *Client) GetOrgOwners(orgId string) (resp *Response[[]Member], err error) {
+	resp, err = Get[[]Member](c, fmt.Sprintf("/org/owners?orgId=%s", orgId), nil)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
 	return
 }
 
@@ -48,8 +58,10 @@ func GetOrgOwners(orgId string) (members []Member, err error) {
 //   @param pageToken 分页标记，第一次请求不填或者空字符串，表示从头开始遍历；分页查询结果还有更多项时返回 nextPageToken，下次遍历可采用该 nextPageToken 入参 pageToken 获取查询结果，示例值："cfcb90voe9jct71bqkfg"
 //   @param pageSize 分页大小,默认值 10
 //   @param filter 该参数用于指定查询范围，initiate：新加入的成员,disabled：已禁用的成员,enabled：未禁用的成员,external：外部成员
-func GetOrgMembers(orgId string, pageToken string, pageSize int, filter string) (members []Member, count int64, nextPageToken string, err error) {
-	members, resp, err := Get[[]Member](fmt.Sprintf("/org/member/list?orgId=%s&pageToken=%s&pageSize=%d&filter=%s", orgId, pageToken, pageSize, filter), nil)
-
-	return members, resp.TotalSize, resp.NextPageToken, err
+func (c *Client) GetOrgMembers(orgId string, pageToken string, pageSize int, filter string) (resp *Response[[]Member], err error) {
+	resp, err = Get[[]Member](c, fmt.Sprintf("/org/member/list?orgId=%s&pageToken=%s&pageSize=%d&filter=%s", orgId, pageToken, pageSize, filter), nil)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return
 }

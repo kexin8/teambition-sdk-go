@@ -71,7 +71,7 @@ Go 实现的 [teambition](https://www.teambition.com/) Open Api 集合
 -  创建任务关联 :x:
 -  删除任务关联 :x:
 -  更新自由任务优先级 :x:
--  查询项目任务 :x:
+-  查询项目任务 :heavy_check_mark:
 -  归档任务(移入回收站) :x:
 -  评论任务 :x:
 -  更新任务标题 :x:
@@ -87,7 +87,7 @@ Go 实现的 [teambition](https://www.teambition.com/) Open Api 集合
 -  更新任务备注 :x:
 -  获取任务关联列表 :x:
 -  更新任务优先级 :x:
--  查询任务详情 :x:
+-  查询任务详情 :heavy_check_mark:
 -  更新任务开始时间 :x:
 -  更新任务标签 :x:
 -  更新任务状态 :x:
@@ -112,11 +112,11 @@ Go 实现的 [teambition](https://www.teambition.com/) Open Api 集合
 -  获取一定时间内订阅的指定用户的计划工时聚合数 :x:
 -  创建实际工时 :x:
 -  获取单个实际工时详情 :x:
--  获取单个任务的实际工时列表 :x:
+-  获取单个任务的实际工时列表 :heavy_check_mark:
 -  获取单个任务的实际工时总和 :x:
 -  获取一定时间内订阅的指定用户的实际工时聚合数据 :x:
 -  获取用户所有计划工时详情数据 :x:
--  获取用户所有实际工时详情数据 :x:
+-  获取用户所有实际工时详情数据 :heavy_check_mark:
 -  更新计划工时单条记录 :x:
 -  更新实际工时单条记录 :x:
 -  删除实际工时单条记录 :x:
@@ -163,7 +163,7 @@ Go 实现的 [teambition](https://www.teambition.com/) Open Api 集合
 -  查询项目状态和状态历史 :x:
 -  恢复归档项目 :x:
 -  归档项目 :x:
--  搜索项目标签 :x:
+-  搜索项目标签 :heavy_check_mark:
 -  创建项目工作流 :x:
 -  删除项目工作流 :x:
 -  更新项目工作流 :x:

@@ -1,6 +1,10 @@
 package teambitionapi
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/pkg/errors"
+)
 
 // Org 企业信息
 type Org struct {
@@ -48,12 +52,15 @@ type Scenariofield struct {
 	Required      bool   `json:"required"`      // 是否必填
 }
 
-//获取企业信息
+// 获取企业信息
 // GET https://open.teambition.com/api/org/info
 // 接口地址： https://open.teambition.com/docs/apis/6321c6ce912d20d3b5a488f4
 // @param orgId 企业ID
-func GetOrgInfo(orgId string) (orgDomain Org, err error) {
-	orgDomain, _, err = Get[Org](fmt.Sprintf("/org/info?orgId=%s", orgId), nil)
+func (c *Client) GetOrgInfo(orgId string) (resp *Response[Org], err error) {
+	resp, err = Get[Org](c, fmt.Sprintf("/org/info?orgId=%s", orgId), nil)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
 	return
 }
 
@@ -64,17 +71,23 @@ func GetOrgInfo(orgId string) (orgDomain Org, err error) {
 // @param categoryIds 自定义字段分类ID集合，逗号组合
 // @param pageToken 分页标识
 // @param pageSize 分页大小(默认50)
-func V3CustomFieldCategorySearch(q, categoryIds, pageToken string, pageSize int) (data CustomFieldCategory, nextPageToken string, err error) {
-	data, resp, err := Get[CustomFieldCategory](fmt.Sprintf("/v3/customfield-category/search?q=%s&categoryIds=%s&pageToken=%s&pageSize=%d", q, categoryIds, pageToken, pageSize), nil)
-	return data, resp.NextPageToken, err
+func (c *Client) V3CustomFieldCategorySearch(q, categoryIds, pageToken string, pageSize int) (resp *Response[CustomFieldCategory], err error) {
+	resp, err = Get[CustomFieldCategory](c, fmt.Sprintf("/v3/customfield-category/search?q=%s&categoryIds=%s&pageToken=%s&pageSize=%d", q, categoryIds, pageToken, pageSize), nil)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return
 }
 
 // 根据自定义字段分类统计自定义字段数
 // GET https://open.teambition.com/api/v3/customfield/count-by-category
 // 接口地址： https://open.teambition.com/docs/apis/63ee3ea2912d20d3b543ee9c
 // @param categoryIds 自定义字段分类ID集合，逗号组合，未分类可使用 uncategory
-func V3CustomFieldCountByCategory(categoryIds string) (data Category, err error) {
-	data, _, err = Get[Category](fmt.Sprintf("/v3/customfield/count-by-category?categoryIds=%s", categoryIds), nil)
+func (c *Client) V3CustomFieldCountByCategory(categoryIds string) (resp *Response[Category], err error) {
+	resp, err = Get[Category](c, fmt.Sprintf("/v3/customfield/count-by-category?categoryIds=%s", categoryIds), nil)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
 	return
 }
 
@@ -85,8 +98,12 @@ func V3CustomFieldCountByCategory(categoryIds string) (data Category, err error)
 // @param sfcIds 任务类型ID集合，逗号组合
 // @param pageToken 分页标识
 // @param pageSize 分页大小(默认50)
-func V3ScenarioFieldConfigSearch(q, sfcIds string, pageToken string, pageSize int) (data Scenariofieldconfig, nextPageToken string, err error) {
-	data, resp, err := Get[Scenariofieldconfig](fmt.Sprintf("/v3/scenariofieldconfig/search?q=%s&sfcIds=%s&pageToken=%s&pageSize=%d", q, sfcIds, pageToken, pageSize), nil)
+func (c *Client) V3ScenarioFieldConfigSearch(q, sfcIds string, pageToken string, pageSize int) (resp *Response[Scenariofieldconfig], err error) {
+	resp, err = Get[Scenariofieldconfig](c, fmt.Sprintf("/v3/scenariofieldconfig/search?q=%s&sfcIds=%s&pageToken=%s&pageSize=%d", q, sfcIds, pageToken, pageSize), nil)
 
-	return data, resp.NextPageToken, err
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return
 }

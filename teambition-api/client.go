@@ -5,40 +5,27 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-resty/resty/v2"
-	teambition "github.com/kexin8/teambition-sdk-go"
 	"github.com/pkg/errors"
 )
 
-var ApiClient *Client
-
 type Client struct {
-	options *teambition.Options
+	*Options
 
-	token       string    //token
-	tokenExpies time.Time //token过期时间
-
-	*resty.Client
+	request *resty.Client
 }
 
-func NewClient(options *teambition.Options) {
+func NewClient(options *Options) (client *Client) {
 	c := resty.New()
 	c.SetBaseURL(options.GetBaseUrl())
 	c.SetHeader("X-Tenant-Id", options.GetOrgId())
 	c.SetHeader("X-Tenant-Type", "organization")
 
-	token, exp, err := GetToken(options.GetAppId(), options.GetAppSecret(), options.GetTokenExpies())
-	if err != nil {
-		panic(err)
+	client = &Client{
+		Options: options,
+		request: c,
 	}
 
-	c.SetHeader("Authorization", token)
-
-	ApiClient = &Client{
-		options:     options,
-		token:       token,
-		tokenExpies: exp,
-		Client:      c,
-	}
+	return
 }
 
 // GetToken 获取token
@@ -60,25 +47,33 @@ func GetToken(appid, appSecret string, expoesIn time.Duration) (token string, ex
 	return "Bearer " + tokenStr, exp, nil
 }
 
-// ValidToken 校验token是否过期
-func (c *Client) ValidToken() bool {
-	if c.token == "" {
-		return false
-	}
-
-	return time.Now().Before(c.tokenExpies)
-}
-
 // RefreshToken 刷新token
 func (c *Client) RefreshToken() error {
-	token, exp, err := GetToken(c.options.GetAppId(), c.options.GetAppSecret(), c.options.GetTokenExpies())
+	//是否需要从缓存中获取token
+	if !c.isCacheToken {
+		//不需要从缓存中获取token，直接刷新token
+		token, _, err := GetToken(c.GetAppId(), c.GetAppSecret(), c.GetTokenExpies())
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		c.request.SetHeader("Authorization", token)
+		return nil
+	}
+
+	//判断token是否过期
+	token, ok := c.tokenCacheExecutor.GetToken(c.GetOrgId())
+	if ok {
+		//token未过期，直接返回
+		c.request.SetHeader("Authorization", token)
+		return nil
+	}
+	//刷新token
+	token, exp, err := GetToken(c.GetAppId(), c.GetAppSecret(), c.GetTokenExpies())
 	if err != nil {
 		return errors.WithStack(err)
 	}
-
-	c.token = token
-	c.tokenExpies = exp
-	c.SetHeader("Authorization", token)
-
+	c.request.SetHeader("Authorization", token)
+	//将token存入缓存
+	c.tokenCacheExecutor.SetToken(c.GetOrgId(), token, exp.Unix())
 	return nil
 }

@@ -1,6 +1,10 @@
 package teambitionapi
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/pkg/errors"
+)
 
 type Project struct {
 	Id             string `json:"id"`             //项目ID
@@ -19,15 +23,7 @@ type Project struct {
 	StartDate      string `json:"startDate"`      //项目开始时间
 	EndDate        string `json:"endDate"`        //项目结束时间
 
-	Customfields []struct {
-		CustomfieldId string `json:"customfieldId"` //自定义字段ID
-		Typ           string `json:"type"`          //类型
-		Value         []struct {
-			Id         string `json:"id"`         //自定义字段值ID
-			Title      string `json:"title"`      //自定义字段值
-			MetaString string `json:"metaString"` //自定义字段值
-		} `json:"value"` //自定义字段值
-	} `json:"customfields"` //自定义字段
+	Customfields []Customfield `json:"customfields"` //自定义字段
 }
 
 type ProjectApplication struct {
@@ -44,15 +40,32 @@ type ProjectMember struct {
 	RoleIds string `json:"roleIds"` // 成员角色ID
 }
 
+// 标签
+type ProjectTag struct {
+	Color          string   `json:"color"`          // 标签颜色
+	Created        string   `json:"created"`        // 创建时间
+	CreatorID      string   `json:"creatorId"`      // 创建人ID
+	ID             string   `json:"id"`             // 标签ID
+	IsArchived     bool     `json:"isArchived"`     // 是否归档
+	Name           string   `json:"name"`           // 标签名
+	OrganizationID string   `json:"organizationId"` // 企业ID
+	ProjectID      string   `json:"projectId"`      // 项目ID
+	TagcategoryIDS []string `json:"tagcategoryIds"`
+	Updated        string   `json:"updated"` // 更新时间
+}
+
 // 查询项目应用列表
 // GET https://open.teambition.com/api/v3/project/{projectId}/application/list
 // 接口地址：https://open.teambition.com/docs/apis/6321c6d0912d20d3b5a496c1
 // @param projectId 项目ID
 // @param appIds 应用ID集合，逗号分隔，如果传递该参数仅查询指定 应用ID
 // @param scope installed 或者 all，默认查询已经安装的应用
-func GetProjectApplications(projectId string, appIds string, scope string) ([]ProjectApplication, error) {
-	result, _, err := Get[[]ProjectApplication](fmt.Sprintf("/project/%s/application/list?appIds=%s&scope=%s", projectId, appIds, scope), nil)
-	return result, err
+func (c *Client) GetProjectApplications(projectId string, appIds string, scope string) (resp *Response[[]ProjectApplication], err error) {
+	resp, err = Get[[]ProjectApplication](c, fmt.Sprintf("/project/%s/application/list?appIds=%s&scope=%s", projectId, appIds, scope), nil)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return
 }
 
 // 查询项目成员列表
@@ -65,20 +78,45 @@ func GetProjectApplications(projectId string, appIds string, scope string) ([]Pr
 // @param skip 分页
 // @param pageSize 分页大小
 // @param pageToken 分页标识
-func GetProjectMembers(projectId string, userIds string, projectRoleId string, limit int, skip int, pageSize int, pageToken string) (Response[[]ProjectMember], error) {
-	_, resp, err := Get[[]ProjectMember](fmt.Sprintf("/v3/project/%s/member?userIds=%s&projectRoleId=%s&limit=%d&skip=%d&pageSize=%d&pageToken=%s", projectId, userIds, projectRoleId, limit, skip, pageSize, pageToken), nil)
-	return resp, err
+func (c *Client) GetProjectMembers(projectId string, userIds string, projectRoleId string, limit int, skip int, pageSize int, pageToken string) (resp *Response[[]ProjectMember], err error) {
+	resp, err = Get[[]ProjectMember](c, fmt.Sprintf("/v3/project/%s/member?userIds=%s&projectRoleId=%s&limit=%d&skip=%d&pageSize=%d&pageToken=%s", projectId, userIds, projectRoleId, limit, skip, pageSize, pageToken), nil)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return
 }
 
 // 查询项目
+//
 //	GET https://open.teambition.com/api/v3/project/query
+//
 // 接口地址： https://open.teambition.com/docs/apis/6321c6d0912d20d3b5a49aa7
-// @projectIds 项目ID列表,多个ID用逗号分隔
-// @name 项目名称
-// @sourceId 原始项目ID
-// @pageToken 分页标识
-// @pageSize 分页大小
-func QueryProject(projectIds string, name string, sourceId string, pageToken string, pageSize int) (resp Response[[]Project], err error) {
-	_, resp, err = Get[[]Project](fmt.Sprintf("/v3/project/query?projectIds=%s&name=%s&sourceId=%s&pageToken=%s&pageSize=%d", projectIds, name, sourceId, pageToken, pageSize), nil)
-	return resp, err
+// @param projectIds 项目ID列表,多个ID用逗号分隔
+// @param name 项目名称
+// @param sourceId 原始项目ID
+// @param pageToken 分页标识
+// @param pageSize 分页大小
+func (c *Client) QueryProject(projectIds string, name string, sourceId string, pageToken string, pageSize int) (resp *Response[[]Project], err error) {
+	resp, err = Get[[]Project](c, fmt.Sprintf("/v3/project/query?projectIds=%s&name=%s&sourceId=%s&pageToken=%s&pageSize=%d", projectIds, name, sourceId, pageToken, pageSize), nil)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return
+}
+
+// 搜索项目标签
+//
+//	GET /v3/project/{projectId}/tag/search
+//
+// @param projectId 项目ID
+// @param tagIds 标签ID集合，逗号组合
+// @param q 模糊查询标签名字
+// @param pageSize 每页长度
+// @param pageToken 分页标
+func (c *Client) SearchProjectTags(projectId string, tagIds string, q string, pageSize int, pageToken string) (resp *Response[[]ProjectTag], err error) {
+	resp, err = Get[[]ProjectTag](c, fmt.Sprintf("/v3/project/%s/tag/search?tagIds=%s&q=%s&pageSize=%d&pageToken=%s", projectId, tagIds, q, pageSize, pageToken), nil)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return
 }

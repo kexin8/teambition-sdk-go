@@ -1,4 +1,4 @@
-package teambition_sdk_go
+package teambitionapi
 
 import "time"
 
@@ -8,16 +8,20 @@ type Options struct {
 	appID     string
 	appSecret string
 
-	tokenExpies int64 //token过期时间
+	tokenExpies        int64              //token过期时间
+	isCacheToken       bool               //是否缓存token
+	tokenCacheExecutor TokenCacheExecutor //token缓存执行器
 }
 
 func NewOptions(orgId, appId, appSecret string) *Options {
 	return &Options{
-		baseUrl:     "https://open.teambition.com/api",
-		orgId:       orgId,
-		appID:       appId,
-		appSecret:   appSecret,
-		tokenExpies: 1 * 3600 * 1000,
+		baseUrl:            "https://open.teambition.com/api",
+		orgId:              orgId,
+		appID:              appId,
+		appSecret:          appSecret,
+		tokenExpies:        1 * 3600 * 1000,
+		isCacheToken:       true,
+		tokenCacheExecutor: &DefaultTokenCacheExecutor{},
 	}
 }
 
@@ -27,6 +31,14 @@ func (c *Options) SetBaseUrl(baseUrl string) {
 
 func (c *Options) SetTokenExpies(tokenExpies int64) {
 	c.tokenExpies = tokenExpies
+}
+
+func (c *Options) SetIsCacheToken(isCacheToken bool) {
+	c.isCacheToken = isCacheToken
+}
+
+func (c *Options) SetTokenCacheExecutor(tokenCacheExecutor TokenCacheExecutor) {
+	c.tokenCacheExecutor = tokenCacheExecutor
 }
 
 func (c *Options) GetBaseUrl() string {
