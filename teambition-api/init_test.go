@@ -2,7 +2,6 @@ package teambitionapi_test
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 
 	teambitionapi "github.com/kexin8/teambition-sdk-go/teambition-api"
@@ -28,7 +27,7 @@ func init() {
 		panic(err)
 	}
 
-	bs, err := ioutil.ReadFile(confile)
+	bs, err := os.ReadFile(confile)
 	if err != nil {
 		panic(err)
 	}
