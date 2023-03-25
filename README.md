@@ -128,7 +128,7 @@ func (d *CustomToeknCacheExecutor) GetToken(tenantId string) (token string, ok b
 
 ```go
 options := teambitionapi.NewOptions(orgId, appId, appSecret)
-options.tokenCacheExecutor = &CustomToeknCacheExecutor{}
+options.SetTokenCacheExecutor(&CustomToeknCacheExecutor{})
 
 tbapi := teambitionapi.NewClient(options)
 ```
