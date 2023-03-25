@@ -54,6 +54,33 @@ type ProjectTag struct {
 	Updated        string   `json:"updated"` // 更新时间
 }
 
+// 迭代
+type Sprint struct {
+	Accomplished string                 `json:"accomplished"` // 完成时间
+	Created      string                 `json:"created"`
+	CreatorID    string                 `json:"creatorId"`   // 创建者用户 ID
+	Description  string                 `json:"description"` // 迭代描述
+	DueDate      string                 `json:"dueDate"`     // 结束时间
+	ExecutorID   string                 `json:"executorId"`  // 执行人 ID
+	ID           string                 `json:"id"`          // 迭代 ID
+	Labels       []string               `json:"labels"`      // 迭代标签信息
+	Name         string                 `json:"name"`        // 迭代名称
+	Payload      map[string]interface{} `json:"payload"`     // 迭代补充字段，如迭代锁定等信息
+	ProjectID    string                 `json:"projectId"`   // 项目 ID
+	StartDate    string                 `json:"startDate"`   // 开始时间
+	Status       SprintStatus           `json:"status"`      // 迭代状态
+	Updated      string                 `json:"updated"`
+}
+
+// 迭代状态
+type SprintStatus string
+
+const (
+	Active   SprintStatus = "active"
+	Complete SprintStatus = "complete"
+	Future   SprintStatus = "future"
+)
+
 // 查询项目应用列表
 // GET https://open.teambition.com/api/v3/project/{projectId}/application/list
 // 接口地址：https://open.teambition.com/docs/apis/6321c6d0912d20d3b5a496c1
@@ -115,6 +142,22 @@ func (c *Client) QueryProject(projectIds string, name string, sourceId string, p
 // @param pageToken 分页标
 func (c *Client) SearchProjectTags(projectId string, tagIds string, q string, pageSize int, pageToken string) (resp *Response[[]ProjectTag], err error) {
 	resp, err = Get[[]ProjectTag](c, fmt.Sprintf("/v3/project/%s/tag/search?tagIds=%s&q=%s&pageSize=%d&pageToken=%s", projectId, tagIds, q, pageSize, pageToken), nil)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return
+}
+
+// 迭代搜索
+//
+//	GET /v3/project/{projectId}/sprint/search
+//
+// @param q,string,false,,false,迭代名字
+// @param pageSize,integer,false,,false,每页长度
+// @param pageToken,string,false,,false,分页标
+// @param sprintIds,string,false,,false,迭代 ID 集合，逗号组合
+func (c *Client) SearchProjectSprints(projectId string, q string, pageSize int, pageToken string, sprintIds string) (resp *Response[[]Sprint], err error) {
+	resp, err = Get[[]Sprint](c, fmt.Sprintf("/v3/project/%s/sprint/search?q=%s&pageSize=%d&pageToken=%s&sprintIds=%s", projectId, q, pageSize, pageToken, sprintIds), nil)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
