@@ -2,7 +2,6 @@ package teambitionapi
 
 import (
 	"fmt"
-
 	"github.com/pkg/errors"
 )
 
@@ -33,12 +32,12 @@ type Task struct {
 	TagIDS         []string      `json:"tagIds"`         // 标签ID集合
 	TasklistID     string        `json:"tasklistId"`     // 任务分组ID
 	TfsID          string        `json:"tfsId"`          // 任务状态ID
-	UniqueID       string        `json:"uniqueId"`       // 任务数字ID
+	UniqueID       int64         `json:"uniqueId"`       // 任务数字ID
 	Updated        string        `json:"updated"`        // 更新时间(UTC)
 	Visible        string        `json:"visible"`        // 任务隐私性，'involves'表达仅参与者可见; 'members'表达项目成员可见
 }
 
-// 查询项目任务
+// GetProjectTasks 查询项目任务
 // GET /v3/project/{projectId}/task/query
 // @param projectId 项目ID
 // @param q	查询语句 参考[TQL查询文档](doc.fullPath=/tql-doc)
@@ -59,6 +58,19 @@ func (c *Client) GetProjectTasks(projectId, q, pageToken string, pageSize int) (
 //	  @param parentTaskId 父任务ID,和taskIds冲突(选其一)
 func (c *Client) GetTaskDetail(taskId, shortIds, parentTaskId string) (resp *Response[[]Task], err error) {
 	resp, err = Get[[]Task](c, fmt.Sprintf("/v3/task/query?taskId=%s&shortIds=%s&parentTaskId=%s", taskId, shortIds, parentTaskId), nil)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return
+}
+
+//	  创建任务 ---后续需要完善，目前只支持必传字段创建项目任务
+//	  POST /v3/task/create
+//	  @param projectId 项目ID
+//	  @param content 任务标题
+//	  @param executorId 执行人ID (v3接口已经改为了必填，但是官方接口文档未更新，如不传会报错，所以这里是必传)
+func (c *Client) CreateTask(projectId string, content string, xOperatorId string) (resp *Response[Task], err error) {
+	resp, err = PostJson[Task](c, fmt.Sprintf("https://open.teambition.com/api/v3/task/create"), fmt.Sprintf(`{"projectId":"%s", "content":"%s"}`, projectId, content), map[string]string{"x-operator-id": xOperatorId})
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
