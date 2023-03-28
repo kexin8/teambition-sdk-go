@@ -9,7 +9,8 @@
 
 teambition open api for go
 
-> [Apifox](https://m49kdj6pc4.apifox.cn),可用于测试验证，以及用于生成代码
+> [`Teambition Open Api` in Apifox](https://m49kdj6pc4.apifox.cn),可用于测试验证，以及用于生成代码
+>
 > 根据teambition swagger doc自动生成，刷新间隔每24小时
 
 ## 目录
