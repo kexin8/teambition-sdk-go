@@ -50,17 +50,19 @@ func Get[T any](c *Client, url string, headers map[string]string) (resp *Respons
 
 // Post 请求
 func Post[T any](c *Client, url string, body any, headers map[string]string) (resp *Response[T], err error) {
-	js, err := json.Marshal(body)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-	return Request[T](c, POST, url, string(js), headers)
+	return Request[T](c, POST, url, body, headers)
 }
 
 // PostJson 请求
 func PostJson[T any](c *Client, url string, body any, headers map[string]string) (resp *Response[T], err error) {
+
+	js, err := json.Marshal(body)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
 	headers["Content-Type"] = "application/json"
-	return Request[T](c, POST, url, body, headers)
+	return Request[T](c, POST, url, string(js), headers)
 }
 
 // Put 请求
