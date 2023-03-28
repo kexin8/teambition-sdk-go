@@ -1,10 +1,19 @@
 package teambitionapi_test
 
-import "testing"
+import (
+	"testing"
+
+	teambitionapi "github.com/kexin8/teambition-sdk-go/teambition-api"
+)
 
 func TestCreateTask(t *testing.T) {
+	task := teambitionapi.CreateTaskRequest{
+		ProjectID: "",
+		Content: "",
+		ExecutorID: "",
+	}
 
-	resp, err := tbapi.CreateTask("项目ID", "测试任务", "创建人ID")
+	resp, err := tbapi.CreateTask(task, "...")
 	if err != nil {
 		t.Errorf("%v", err)
 	}

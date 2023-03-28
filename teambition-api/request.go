@@ -1,6 +1,8 @@
 package teambitionapi
 
 import (
+	"encoding/json"
+
 	"github.com/pkg/errors"
 )
 
@@ -48,7 +50,11 @@ func Get[T any](c *Client, url string, headers map[string]string) (resp *Respons
 
 // Post 请求
 func Post[T any](c *Client, url string, body any, headers map[string]string) (resp *Response[T], err error) {
-	return Request[T](c, POST, url, body, headers)
+	js, err := json.Marshal(body)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return Request[T](c, POST, url, string(js), headers)
 }
 
 // PostJson 请求

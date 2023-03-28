@@ -64,13 +64,14 @@ func (c *Client) GetTaskDetail(taskId, shortIds, parentTaskId string) (resp *Res
 	return
 }
 
-//	  创建任务 ---后续需要完善，目前只支持必传字段创建项目任务
-//	  POST /v3/task/create
-//	  @param projectId 项目ID
-//	  @param content 任务标题
-//	  @param executorId 执行人ID (v3接口已经改为了必填，但是官方接口文档未更新，如不传会报错，所以这里是必传)
-func (c *Client) CreateTask(projectId string, content string, xOperatorId string) (resp *Response[Task], err error) {
-	resp, err = PostJson[Task](c, fmt.Sprintf("https://open.teambition.com/api/v3/task/create"), fmt.Sprintf(`{"projectId":"%s", "content":"%s"}`, projectId, content), map[string]string{"x-operator-id": xOperatorId})
+// 创建任务
+// POST /v3/task/create
+// Doc https://open.teambition.com/docs/apis/6321c6d1912d20d3b5a4a514
+// @param projectId 项目ID
+// @param content 任务标题
+// @param executorId 执行人ID (v3接口已经改为了必填，但是官方接口文档未更新，如不传会报错，所以这里是必传)
+func (c *Client) CreateTask(createTaskRequest CreateTaskRequest, xOperatorId string) (resp *Response[Task], err error) {
+	resp, err = PostJson[Task](c, "/v3/task/create", createTaskRequest, map[string]string{"x-operator-id": xOperatorId})
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
